@@ -8,7 +8,7 @@ Belajar coding security di .NET memakai JWT.
 JWT (Json Web Token)
 JSON Web Token, yang berarti token ini menggunakan JSON (Javascript Object Notation) berbentuk string panjang yang sangat random, lalu token ini memungkinkan kita untuk mengirimkan data yang dapat diverifikasi oleh dua pihak atau lebih.
 
-Komponen penting:\
+## Komponen penting:
 -secret\
 Teks rahasia yang digunakan untuk membuat token atau identifikasi token.\
 Contoh aplikasi ini memakai secret minimal 126 karakter.\
@@ -22,29 +22,11 @@ Contoh:
 ```http
   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImJ1ZGkiLCJuYmYiOjE2NzA5MTQzNjcsImV4cCI6MTY3MTAwMDc2NywiaWF0IjoxNjcwOTE0MzY3fQ.IE5QfAJdY3weOGuum1obBAb8r0oE2Jo9wOchqSPzYKs
 ```
-## API Reference
-
-#### Get all items
-
+untuk debug token bisa buka web ini
 ```http
-  GET /api/items
+  jwt.io
 ```
 
-| Parameter | Type     | Description                |
-| :-------- | :------- | :------------------------- |
-| `api_key` | `string` | **Required**. Your API key |
-
-#### Get item
-
-```http
-  GET /api/items/${id}
-```
-
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `id`      | `string` | **Required**. Id of item to fetch |
-
-#### add(num1, num2)
-
-Takes two numbers and returns the sum.
-
+## Alur
+1. user login dapat token
+2. token digunakan di header Authorization
