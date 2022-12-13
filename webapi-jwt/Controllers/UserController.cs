@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -17,32 +18,25 @@ public class UserController : ControllerBase
         _logger = logger;
     }
 
-    public string GenerateToken(int userId)
+    private string GenerateToken(User user)
     {
-        var mySecret = "asdv234234^&%&^%&^hjsdfb2%%%";
-        var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(mySecret));
-
-        var myIssuer = "http://mysite.com";
-        var myAudience = "http://myaudience.com";
-
+        List<Claim> claims = new List<Claim>();
+        claims.Add(new Claim(ClaimTypes.Name, user.Username));
         var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.ASCII.GetBytes(State.Secret);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new Claim[]
-            {
-            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-            }),
-            Expires = DateTime.UtcNow.AddDays(7),
-            Issuer = myIssuer,
-            Audience = myAudience,
-            SigningCredentials = new SigningCredentials(
-                mySecurityKey, SecurityAlgorithms.HmacSha256Signature)
+            Subject = new ClaimsIdentity(claims),
+            Expires = DateTime.UtcNow.AddHours(24),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+            SecurityAlgorithms.HmacSha256Signature)
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
 
+    [AllowAnonymous]
     [HttpPost("/register")]
     public IEnumerable<object?> Register([FromBody] User body)
     {
@@ -62,6 +56,8 @@ public class UserController : ControllerBase
             .ToList();
         return data;
     }
+
+    [AllowAnonymous]
     [HttpPost("/login")]
     public object? Login([FromBody] User body)
     {
@@ -77,13 +73,14 @@ public class UserController : ControllerBase
         // Read
         Console.WriteLine("Querying for a blog");
         var data = db.Users
-            .Find(body.Username);
+            .FirstOrDefault(it => it.Username == body.Username);
+        Console.WriteLine(data);
         if (data?.Password == body.Password)
         {
             return new
             {
                 Message = "login berhasil",
-                Token = "coba"
+                Token = GenerateToken(data)
             };
         }
         else
@@ -91,5 +88,11 @@ public class UserController : ControllerBase
             return null;
         }
 
+    }
+
+    [HttpGet("/secret")]
+    public object? Secret()
+    {
+        return new { Message = "this is authorize api" };
     }
 }
