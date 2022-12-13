@@ -28,5 +28,5 @@ untuk debug token bisa buka web ini
 ```
 
 ## Alur
-1. user login dapat token
+1. user login untuk mendapatkan token
 2. token digunakan di header Authorization
