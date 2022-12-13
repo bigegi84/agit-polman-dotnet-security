@@ -65,11 +65,6 @@ public class UserController : ControllerBase
         // Note: This sample requires the database to be created before running.
         Console.WriteLine($"Database path: {db.DbPath}.");
 
-        // Create
-        Console.WriteLine("Inserting a new blog");
-        db.Add(body);
-        db.SaveChanges();
-
         // Read
         Console.WriteLine("Querying for a blog");
         var data = db.Users
