@@ -90,6 +90,7 @@ public class UserController : ControllerBase
 
     }
 
+    [Authorize]
     [HttpGet("/secret")]
     public object? Secret()
     {
