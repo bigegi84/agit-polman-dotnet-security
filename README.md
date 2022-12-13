@@ -8,7 +8,7 @@ Belajar coding security di .NET memakai JWT.
 JWT (Json Web Token)
 JSON Web Token, yang berarti token ini menggunakan JSON (Javascript Object Notation) berbentuk string panjang yang sangat random, lalu token ini memungkinkan kita untuk mengirimkan data yang dapat diverifikasi oleh dua pihak atau lebih.
 
-## Komponen penting
+## Komponen Penting
 -secret\
 Teks rahasia yang digunakan untuk membuat token atau identifikasi token.\
 Contoh aplikasi ini memakai secret minimal 126 karakter.\
