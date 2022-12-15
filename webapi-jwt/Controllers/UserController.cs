@@ -93,6 +93,12 @@ public class UserController : ControllerBase
 
     }
 
+    [AllowAnonymous]
+    [HttpGet("/public")]
+    public object? Public()
+    {
+        return new { Message = "Api ini bisa di akses tanpa login maupun login." };
+    }
     [Authorize]
     [HttpGet("/secret")]
     public object? Secret()
@@ -100,16 +106,22 @@ public class UserController : ControllerBase
         return new { Message = "Api ini harus login." };
     }
     [Authorize(Roles = "mahasiswa")]
+    [HttpGet("/secret/mahasiswa")]
+    public object? SecretMahasiswa()
+    {
+        return new { Message = "Api ini harus mahasiswa." };
+    }
+    [Authorize(Roles = "dosen")]
     [HttpGet("/secret/dosen")]
     public object? SecretDosen()
     {
-        return new { Message = "Api ini harus admin." };
+        return new { Message = "Api ini harus dosen." };
     }
     [Authorize(Roles = "mahasiswa,dosen")]
     [HttpGet("/secret/mahasiswaAtauDosen")]
     public object? SecretMahasiswaAtauDosen()
     {
-        return new { Message = "Api ini boleh user atau admin." };
+        return new { Message = "Api ini boleh mahasiswa atau dosen." };
     }
 
     // TODO
