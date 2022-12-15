@@ -103,7 +103,7 @@ public class UserController : ControllerBase
     [HttpGet("/secret")]
     public object? Secret()
     {
-        return new { Message = "Api ini harus login." };
+        return new { Message = "Api ini harus login rolenya bebas." };
     }
     [Authorize(Roles = "mahasiswa")]
     [HttpGet("/secret/mahasiswa")]
