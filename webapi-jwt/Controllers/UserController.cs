@@ -22,6 +22,12 @@ public class UserController : ControllerBase
     {
         List<Claim> claims = new List<Claim>();
         claims.Add(new Claim(ClaimTypes.Name, user.Username));
+        string[] words = user.Role.Split(',');
+        foreach (var word in words)
+        {
+            System.Console.WriteLine($"<{word}>");
+            claims.Add(new Claim(ClaimTypes.Role, word));
+        }
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(State.Secret);
         var tokenDescriptor = new SecurityTokenDescriptor
@@ -38,7 +44,7 @@ public class UserController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("/register")]
-    public IEnumerable<object?> Register([FromBody] User body)
+    public object? Register([FromBody] User body)
     {
         using var db = new DBContext();
         // Note: This sample requires the database to be created before running.
@@ -46,6 +52,7 @@ public class UserController : ControllerBase
 
         // Create
         Console.WriteLine("Inserting a new blog");
+        body.Password = BCrypt.Net.BCrypt.HashPassword(body.Password);
         db.Add(body);
         db.SaveChanges();
 
@@ -53,7 +60,7 @@ public class UserController : ControllerBase
         Console.WriteLine("Querying for a blog");
         var data = db.Users
             .OrderBy(b => b.UserId)
-            .ToList();
+            .LastOrDefault();
         return data;
     }
 
@@ -70,7 +77,8 @@ public class UserController : ControllerBase
         var data = db.Users
             .FirstOrDefault(it => it.Username == body.Username);
         Console.WriteLine(data);
-        if (data?.Password == body.Password)
+
+        if (BCrypt.Net.BCrypt.Verify(body.Password, data?.Password))
         {
             return new
             {
@@ -80,7 +88,7 @@ public class UserController : ControllerBase
         }
         else
         {
-            return null;
+            return BadRequest();
         }
 
     }
@@ -89,6 +97,23 @@ public class UserController : ControllerBase
     [HttpGet("/secret")]
     public object? Secret()
     {
-        return new { Message = "this is authorize api" };
+        return new { Message = "Api ini harus login." };
     }
+    [Authorize(Roles = "mahasiswa")]
+    [HttpGet("/secret/dosen")]
+    public object? SecretDosen()
+    {
+        return new { Message = "Api ini harus admin." };
+    }
+    [Authorize(Roles = "mahasiswa,dosen")]
+    [HttpGet("/secret/mahasiswaAtauDosen")]
+    public object? SecretMahasiswaAtauDosen()
+    {
+        return new { Message = "Api ini boleh user atau admin." };
+    }
+
+    // TODO
+    // [HttpGet("/secret/petugas")]
+    // [HttpGet("/secret/rektor")]
+    // [HttpGet("/secret/rektorDanDosen")]
 }
